@@ -1,39 +1,71 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-const registerUser = async(req, res)=>{
+const registerUser = async(req, res) => {
     try {
-        const {username, email, password} = req.body;
-        console.log(username, email, password);
-        const existingUser = await User.findOne({$or :[{email}, {username}]})
-
-        if(existingUser){
-            return res.status(400).json({message: "User already exists"});
+        const {username, email, password} = req.body;        
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide all required fields"
+            });
         }
 
+        // Check if user already exists
+        const existingUser = await User.findOne({
+            $or: [
+                { email: email.toLowerCase() },
+                { username: username.toLowerCase() }
+            ]
+        });
 
-        const user = await User.create({username, email, password});
-  
-        await user.save();
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: existingUser.email === email.toLowerCase() 
+                    ? "Email already registered" 
+                    : "Username already taken"
+            });
+        }
 
-        const token = jwt.sign({
-            userId: user._id,
-            username: user.username,
-        }, process.env.JWT_SECRET, {expiresIn: "1h"});
+        // Create new user
+        const user = await User.create({
+            username: username.toLowerCase(),
+            email: email.toLowerCase(),
+            password
+        });
 
+        // Generate JWT token
+        const token = jwt.sign(
+            {
+                userId: user._id,
+                username: user.username,
+            }, 
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        // Send response
         res.status(201).json({
+            success: true,
+            message: "Registration successful",
             token,
-            user:{
+            user: {
                 _id: user._id,
                 username: user.username,
                 email: user.email,
             }
-        })
-    } catch (err) {
-        res.status(500).json({message: "Internal server error"});
-        
+        });
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Registration failed",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
-}
+};
 
 const loginUser = async(req, res)=>{
     try {
