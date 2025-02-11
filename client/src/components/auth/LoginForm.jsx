@@ -18,8 +18,13 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import authService from '../../services/auth.service';
+import { useDispatch, useSelector } from 'react-redux';
+
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -35,7 +40,13 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //! TODO: Here I've to implement login logic here...
+    try {
+      await authService.login(formData, dispatch);
+      toast.success('Welcome back!');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (

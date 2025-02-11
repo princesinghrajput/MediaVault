@@ -19,9 +19,13 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import authService from '../../services/auth.service';
+import { useDispatch, useSelector } from 'react-redux';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.user);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -38,7 +42,14 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //! TODO: Here I've to implement registration logic here....
+    try {
+      await authService.register(formData, dispatch);
+      toast.success('Account created successfully!');
+      navigate('/login');
+    } catch (error) {
+      // Error handling is now managed by Redux
+      console.error('Registration error:', error);
+    }
   };
 
   return (
