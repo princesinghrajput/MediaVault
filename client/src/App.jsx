@@ -1,23 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import './App.css'
+import theme from './theme';
 import RegisterForm from './components/auth/RegisterForm.jsx';
+import LoginForm from './components/auth/LoginForm.jsx';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },  
-  },
-});
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Router>
         <Routes>
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginForm />} />
         </Routes>
       </Router>
     </ThemeProvider>
