@@ -1,15 +1,21 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  currentUser: null,
-  isAuthenticated: false,
-  loading: false,
-  error: null,
+// Get initial auth state from localStorage
+const getInitialState = () => {
+  const user = localStorage.getItem('user');
+  const token = localStorage.getItem('token');
+  
+  return {
+    currentUser: user ? JSON.parse(user) : null,
+    isAuthenticated: !!token,
+    loading: false,
+    error: null,
+  };
 };
 
 const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
     loginStart: (state) => {
       state.loading = true;

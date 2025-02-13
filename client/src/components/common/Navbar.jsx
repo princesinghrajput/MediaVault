@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../store/slices/userSlice';
 import {
   AppBar,
   Toolbar,
@@ -10,20 +12,18 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Divider,
-  ListItemIcon,
 } from '@mui/material';
-import { Logout, Dashboard, Person } from '@mui/icons-material';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isAuthenticated, currentUser } = useSelector((state) => state.user);
   const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
 
-  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
   const handleLogout = () => {
-    handleMenuClose();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    dispatch(logout());
     navigate('/login');
   };
 
@@ -37,13 +37,35 @@ const Navbar = () => {
           >
             MediaVault
           </Typography>
+          
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Button color="primary" onClick={() => navigate('/login')}>
-              Login
-            </Button>
-            <Button variant="contained" color="primary" onClick={() => navigate('/register')}>
-              Register
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Typography color="primary">
+                  {currentUser?.username}
+                </Typography>
+                <Button 
+                  color="primary" 
+                  variant="outlined"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button color="primary" onClick={() => navigate('/login')}>
+                  Login
+                </Button>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  onClick={() => navigate('/register')}
+                >
+                  Register
+                </Button>
+              </>
+            )}
           </Box>
         </Toolbar>
       </Container>

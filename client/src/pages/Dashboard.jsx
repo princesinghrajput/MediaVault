@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { 
   Container, 
   Grid, 
@@ -17,33 +19,41 @@ import { toast } from 'react-toastify';
 import mediaService from '../services/media.service';
 import UploadSection from '../components/media/UploadSection';
 import MediaCard from '../components/media/MediaCard';
+import { checkAuth } from '../utils/auth';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.user);
+  
   const [mediaFiles, setMediaFiles] = useState([]);
   const [mediaType, setMediaType] = useState('all');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [limit] = useState(9);
 
+  // Check authentication on mount and redirect if not authenticated
   useEffect(() => {
-    loadMedia(1);
-  }, [mediaType]);
+    const { isAuthenticated: isAuth } = checkAuth();
+    if (!isAuth) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
-  const loadMedia = async (currentPage) => {
-    if (isLoading || (!hasMore && currentPage > 1)) return;
+  // Load media files
+  const loadMedia = async (currentPage = 1, reset = false) => {
+    if (isLoading) return;
 
     setIsLoading(true);
     try {
       const response = mediaType === 'all'
-        ? await mediaService.getAllMedia(currentPage, limit)
-        : await mediaService.filterMediaByType(mediaType, currentPage, limit);
+        ? await mediaService.getAllMedia(currentPage)
+        : await mediaService.filterMediaByType(mediaType, currentPage);
 
-      const { media, hasMore: moreAvailable } = response;
-      setMediaFiles(prev => currentPage === 1 ? media : [...prev, ...media]);
-      setHasMore(moreAvailable);
+      setMediaFiles(prev => reset ? response.media : [...prev, ...response.media]);
+      setHasMore(response.hasMore);
     } catch (error) {
       toast.error('Error loading media files');
     } finally {
@@ -51,8 +61,21 @@ const Dashboard = () => {
     }
   };
 
+  // Initial load and type change
+  useEffect(() => {
+    setPage(1);
+    loadMedia(1, true);
+  }, [mediaType]);
+
   const handleFileSelect = (event) => {
-    setSelectedFile(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error('File size should not exceed 50MB');
+        return;
+      }
+      setSelectedFile(file);
+    }
   };
 
   const handleUpload = async () => {
@@ -66,9 +89,9 @@ const Dashboard = () => {
       await mediaService.uploadMedia(selectedFile);
       toast.success('File uploaded successfully');
       setSelectedFile(null);
-      loadMedia(1);
+      loadMedia(1, true);
     } catch (error) {
-      toast.error('Error uploading file');
+      toast.error(error.response?.data?.message || 'Error uploading file');
     } finally {
       setIsUploading(false);
     }
@@ -78,11 +101,21 @@ const Dashboard = () => {
     try {
       await mediaService.deleteMedia(id);
       toast.success('File deleted successfully');
-      loadMedia(1);
+      loadMedia(1, true);
     } catch (error) {
       toast.error('Error deleting file');
     }
   };
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    loadMedia(nextPage);
+  };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -120,25 +153,30 @@ const Dashboard = () => {
           ))}
         </Grid>
 
-        {hasMore && mediaFiles.length > 0 && (
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-            <Button
-              variant="outlined"
-              onClick={() => setPage(prev => prev + 1)}
-              disabled={isLoading}
-              startIcon={isLoading && <CircularProgress size={20} />}
-            >
-              {isLoading ? 'Loading...' : 'Load More'}
-            </Button>
+        {isLoading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
           </Box>
         )}
 
-        {mediaFiles.length === 0 && !isLoading && (
+        {!isLoading && mediaFiles.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <PhotoLibraryIcon sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
             <Typography variant="h6" color="text.secondary">
               No media files yet
             </Typography>
+          </Box>
+        )}
+
+        {hasMore && mediaFiles.length > 0 && !isLoading && (
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+            <Chip
+              label="Load More"
+              onClick={loadMore}
+              clickable
+              color="primary"
+              variant="outlined"
+            />
           </Box>
         )}
       </Paper>

@@ -26,14 +26,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const expectedError = error.response &&
-      error.response.status >= 400 &&
-      error.response.status < 500;
-
-    if (!expectedError) {
-      toast.error('An unexpected error occurred');
+    // Handle 401 unauthorized errors
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
 
+    const message = error.response?.data?.message || 'An error occurred';
+    toast.error(message);
     return Promise.reject(error);
   }
 );
