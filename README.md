@@ -12,9 +12,20 @@ A modern media management platform that helps you store, organize, and share you
 - **Responsive Design** - Works great on desktop and mobile
 - **User Authentication** - Secure account management
 
+### Desktop View
+![Register Page](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/signup-page.png)
+
+![Login Page](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/login-page.png)
+
+![Desktop View](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/dashboard.png)
+
 ![Upload](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/upload.png)
 
 ![Upload Preview](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/preview.png)
+
+
+### Mobile View
+![Mobile View](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/mobile.png)
 
 ## 🚀 Tech Stack
 
@@ -87,11 +98,7 @@ npm run dev
 
 ## 📱 Screenshots
 
-### Desktop View
-![Desktop View](https://raw.githubusercontent.com/yourusername/mediavault/main/screenshots/desktop.png)
 
-### Mobile View
-![Mobile View](https://raw.githubusercontent.com/yourusername/mediavault/main/screenshots/mobile.png)
 
 ## 🔒 Security Features
 
