@@ -34,7 +34,6 @@ const Dashboard = () => {
   const [hasMore, setHasMore] = useState(true);
   const [limit] = useState(9);
 
-  // Check authentication on mount and redirect if not authenticated
   useEffect(() => {
     const { isAuthenticated: isAuth } = checkAuth();
     if (!isAuth) {
@@ -70,11 +69,34 @@ const Dashboard = () => {
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Validate file type
+      if (!file.type.match('image.*') && !file.type.match('video.*')) {
+        toast.error('Please select an image or video file');
+        return;
+      }
+
+      // Validate file size (50MB limit)
       if (file.size > 50 * 1024 * 1024) {
         toast.error('File size should not exceed 50MB');
         return;
       }
-      setSelectedFile(file);
+
+      // Validate image dimensions if it's an image
+      if (file.type.startsWith('image/')) {
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(img.src);
+          setSelectedFile(file);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(img.src);
+          toast.error('Invalid image file');
+        };
+        img.src = URL.createObjectURL(file);
+      } else {
+        // For video files
+        setSelectedFile(file);
+      }
     }
   };
 
