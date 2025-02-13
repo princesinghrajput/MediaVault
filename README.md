@@ -1,6 +1,6 @@
 # MediaVault 📸
 
-![MediaVault Dashboard](https://raw.githubusercontent.com/princesinghrajput/mediavault/main/screenshots/dashboard.png)
+![MediaVault Dashboard](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/dashboard.png)
 
 A modern media management platform that helps you store, organize, and share your photos and videos securely in the cloud.
 
@@ -12,9 +12,9 @@ A modern media management platform that helps you store, organize, and share you
 - **Responsive Design** - Works great on desktop and mobile
 - **User Authentication** - Secure account management
 
-![Upload](https://raw.githubusercontent.com/princesinghrajput/mediavault/main/screenshots/upload.png)
+![Upload](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/upload.png)
 
-![Upload Preview](https://raw.githubusercontent.com/princesinghrajput/mediavault/main/screenshots/preview.png)
+![Upload Preview](https://raw.githubusercontent.com/princesinghrajput/MediaVault/refs/heads/main/main/screenshots/preview.png)
 
 ## 🚀 Tech Stack
 
