@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:6000',
+        target: 'https://mediavault-xx3y.onrender.com',
         changeOrigin: true,
       }
     }
