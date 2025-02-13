@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../store/slices/userSlice';
+import { useSelector } from 'react-redux';
 import {
   AppBar,
   Toolbar,
@@ -9,52 +7,53 @@ import {
   Button,
   Box,
   Container,
-  Avatar,
-  Menu,
-  MenuItem,
 } from '@mui/material';
+import ProfileMenu from './ProfileMenu';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { isAuthenticated, currentUser } = useSelector((state) => state.user);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    dispatch(logout());
-    navigate('/login');
-  };
 
   return (
-    <AppBar position="static" elevation={0} sx={{ bgcolor: 'white' }}>
+    <AppBar 
+      position="static" 
+      elevation={0} 
+      sx={{ 
+        bgcolor: 'white',
+        borderBottom: '1px solid',
+        borderColor: 'divider'
+      }}
+    >
       <Container maxWidth="lg">
-        <Toolbar disableGutters>
+        <Toolbar 
+          disableGutters 
+          sx={{ 
+            minHeight: 64,
+            justifyContent: 'space-between'
+          }}
+        >
           <Typography
             variant="h6"
-            sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 700, fontSize: '1.5rem' }}
+            sx={{ 
+              color: 'primary.main', 
+              fontWeight: 700, 
+              fontSize: '1.5rem',
+              cursor: 'pointer'
+            }}
+            onClick={() => navigate('/')}
           >
             MediaVault
           </Typography>
           
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             {isAuthenticated ? (
-              <>
-                <Typography color="primary">
-                  {currentUser?.username}
-                </Typography>
-                <Button 
-                  color="primary" 
-                  variant="outlined"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </>
+              <ProfileMenu user={currentUser} />
             ) : (
               <>
-                <Button color="primary" onClick={() => navigate('/login')}>
+                <Button 
+                  color="primary" 
+                  onClick={() => navigate('/login')}
+                >
                   Login
                 </Button>
                 <Button 

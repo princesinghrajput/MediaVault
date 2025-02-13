@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth.routes")
 const cors = require('cors');
+const mediaRoutes = require('./routes/media.routes');
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -24,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // });
 
 app.use("/api/auth", authRoutes);
+app.use('/api/media', mediaRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
