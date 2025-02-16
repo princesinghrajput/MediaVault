@@ -127,14 +127,6 @@ npm run dev
    - Quick delete option
    - Responsive gallery
 
-## 🚧 Upcoming Features
-
-- [ ] Share media via links
-- [ ] Create albums
-- [ ] Search functionality
-- [ ] Batch operations
-- [ ] Download options
-
 
 ## 👨‍💻 Author
 
